@@ -1,0 +1,38 @@
+package web.crud.dao;
+
+import org.springframework.stereotype.Component;
+import web.crud.model.Role;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Component
+public class RoleDaoImpl implements RoleDao {
+
+    @PersistenceContext
+    EntityManager entityManager;
+
+    @Override
+    public List<Role> getAllRoles() {
+        return entityManager.createQuery("select u from Role u", Role.class).getResultList();
+    }
+
+    @Override
+    public Role getRoleByName(String name) {
+        return (Role) entityManager.createQuery(
+                "select r from Role r where r.role=:name"
+        ).setParameter("name", name).getSingleResult();
+    }
+
+    @Override
+    public HashSet<Role> getSetOfRoles(String[] roleNames) {
+        Set<Role> roleSet = new HashSet<>();
+        for (String role : roleNames) {
+            roleSet.add(getRoleByName(role));
+        }
+        return (HashSet) roleSet;
+    }
+}
